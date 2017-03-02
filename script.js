@@ -51,19 +51,32 @@ window.onload = function() {
 						"Life 360",
 						"august"
 					];
+
+
 	let jobListDiv = document.getElementById("job-list");
 
 
-	for(let i = 0; i < somaCompanies.length; i++) {
-		let curCompany = somaCompanies[i];
-		let jobDiv = createJobComponent(curCompany);
+	for(let companyId = 0; companyId < somaCompanies.length; companyId++) {
+		let curCompany = somaCompanies[companyId];
+		let jobDiv = createJobComponent(curCompany, companyId);
+		
 		jobListDiv.appendChild(jobDiv);
 	}
 
+	checkCompletedInLocalStorage();
 };
 
-function createJobComponent(companyName) {
-	let jobDiv = createJobDiv(companyName);
+function checkCompletedInLocalStorage() {
+	for(let companyId in localStorage){
+		if(localStorage[companyId] === "completed") {
+			let completedCompanyInput = document.getElementById(companyId);
+			completedCompanyInput.checked = true;
+		}
+	}
+}
+
+function createJobComponent(companyName, companyId) {
+	let jobDiv = createJobDiv(companyName, companyId);
 	let googleLink = createGoogleLink(companyName);
 	
 	jobDiv.appendChild(googleLink);
@@ -72,9 +85,12 @@ function createJobComponent(companyName) {
 
 }
 
-function createJobDiv(companyName) {
+function createJobDiv(companyName, companyId) {
 	let jobDiv = document.createElement("div")
 	jobDiv.classList.add("bg-info");
+
+	let completedCheckbox = createCompletedCheckbox(companyId);
+	jobDiv.appendChild(completedCheckbox)
 
 	return jobDiv;
 }
@@ -88,5 +104,22 @@ function createGoogleLink(companyName) {
 	return googleLink;
 }
 
+function createCompletedCheckbox(companyId) {
+	let checkBox = document.createElement("input");
+	checkBox.setAttribute("type", "checkbox");
+	checkBox.id = companyId;
 
+	checkBox.addEventListener("click", changeCompletedStatus)
+
+	return checkBox;
+}
+
+function changeCompletedStatus(e) {
+	localStorage[this.id] === "completed" ? toggleStatus.call(this, "notCompleted") : toggleStatus.call(this, "completed")
+	
+}
+
+function toggleStatus(booleanString) {
+	localStorage.setItem(this.id, booleanString)
+}
 
